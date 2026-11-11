@@ -9,7 +9,7 @@
 export function corsHeaders(): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": process.env.CHAT_ALLOWED_ORIGIN || "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   }
 }

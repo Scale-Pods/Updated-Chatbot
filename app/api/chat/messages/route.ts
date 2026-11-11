@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
+import { corsHeaders } from "@/lib/cors"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 export const dynamic = "force-dynamic"
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
   if (!sessionId) {
     return NextResponse.json(
       { error: "session_id is required" },
-      { status: 400 },
+      { status: 400, headers: corsHeaders() },
     )
   }
 
@@ -54,19 +55,32 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("[chat/messages] Supabase error:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500, headers: corsHeaders() },
+      )
     }
 
     const messages = (data ?? []) as ChatRow[]
 
-    return NextResponse.json({
-      count: messages.length,
-      messages,
-    })
+    return NextResponse.json(
+      {
+        count: messages.length,
+        messages,
+      },
+      { headers: corsHeaders() },
+    )
   } catch (error) {
     console.error("[chat/messages] Unexpected error:", error)
     const message =
       error instanceof Error ? error.message : "Unexpected server error"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json(
+      { error: message },
+      { status: 500, headers: corsHeaders() },
+    )
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders() })
 }
